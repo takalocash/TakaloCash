@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TakaloCash</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="loginPage">
+  <div class="card">
+    <h2>TakaloCash</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Mot de passe">
+    <button onclick="login()">Connexion</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="container" id="dashboard" style="display:none;">
+  
+  <div class="header">
+    <h2>TakaloCash</h2>
+    <div class="icons">
+      <span>🔔</span>
+      <span onclick="logout()">☰</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Solde disponible</h3>
+    <h1 id="solde">0 Ar</h1>
+  </div>
+
+  <div class="btns">
+    <button class="send" onclick="envoyer()">Envoyer</button>
+    <button class="receive" onclick="recevoir()">Recevoir</button>
+  </div>
+
+  <div class="card">
+    <h3>Historique</h3>
+    <ul id="history"></ul>
+  </div>
+
+</div>
+
+<script src="firebase.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
