@@ -1,3 +1,9 @@
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    currentUser = user;
+    loadDashboard();
+  }
+});
 let currentUser = null;
 
 // LOGIN
