@@ -110,11 +110,13 @@ function signup() {
 
       // Création user dans database
       db.collection("users").doc(user.uid).set({
-        email: email,
-        solde: 0,
-        createdAt: new Date()
-      });
-
+  email: email,
+  nom: "",
+  telephone: "",
+  photo: "",
+  solde: 0,
+  createdAt: new Date()
+});
       currentUser = user;
 
       // Miditra ho azy
