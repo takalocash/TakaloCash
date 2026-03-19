@@ -1,60 +1,184 @@
+/* --- Global --- */
 body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f2f5f7;
   margin: 0;
-  font-family: Arial;
-  background: #0b0e11;
-  color: white;
+  padding: 0;
 }
 
 .container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  margin: 40px auto;
 }
 
+/* --- Card --- */
 .card {
-  background: #1e2329;
+  background-color: #fff;
   padding: 20px;
-  border-radius: 10px;
-  margin-top: 15px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
 }
 
-input {
+/* --- Inputs and Buttons --- */
+input, select {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 5px;
-  border: none;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 button {
   width: 100%;
   padding: 12px;
-  margin-top: 10px;
-  border-radius: 5px;
+  margin: 8px 0;
+  border-radius: 8px;
   border: none;
   font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.send {
-  background: #f0b90b;
+button:hover {
+  opacity: 0.9;
 }
 
-.receive {
-  background: #02c076;
+/* --- Buttons send / receive --- */
+button.send {
+  background-color: #ffc107;
+  color: #000;
 }
 
+button.receive {
+  background-color: #28a745;
+  color: #fff;
+}
+
+/* --- Header dashboard --- */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #0d6efd;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
 }
 
-.icons span {
-  margin-left: 10px;
+.header h2 {
+  margin: 0;
+}
+
+.header .icons span {
+  margin-left: 15px;
   cursor: pointer;
+  font-size: 1.3em;
 }
 
-.btns {
-  display: flex;
-  gap: 10px;
+/* --- Profile picture --- */
+#profilePic {
+  display: block;
+  margin: 15px auto;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0d6efd;
+}
+
+/* --- Solde --- */
+#solde {
+  text-align: center;
+  font-size: 2.2em;
+  margin: 10px 0;
+  font-weight: bold;
+  color: #0d6efd;
+}
+
+/* --- Services buttons --- */
+.services {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.services button {
+  padding: 15px;
+  font-weight: bold;
+  color: #fff;
+  border-radius: 10px;
+}
+
+.services button.crypto { background-color: #6f42c1; }
+.services button.wallet { background-color: #20c997; }
+.services button.starlink { background-color: #fd7e14; }
+.services button.xbet { background-color: #dc3545; }
+
+/* --- Historique table --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+th {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+/* --- Notifications --- */
+#notificationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#notificationList li {
+  background-color: #f8f9fa;
+  padding: 8px 10px;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  font-size: 0.9em;
+}
+
+/* --- Profil --- */
+.card h3 {
+  margin-top: 0;
+}
+
+#profilNom, #profilTelephone {
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+/* --- Responsive --- */
+@media screen and (max-width: 500px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .services {
+    grid-template-columns: 1fr;
+  }
+
+  #profilePic {
+    width: 50px;
+    height: 50px;
+  }
+
+  #solde {
+    font-size: 1.8em;
+  }
 }
