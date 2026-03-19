@@ -93,3 +93,27 @@ function loadHistory() {
       });
     });
 }
+function signup() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  firebase.auth().createUserWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+
+      let user = userCredential.user;
+
+      // Création user dans database
+      db.collection("users").doc(user.uid).set({
+        email: email,
+        solde: 0,
+        createdAt: new Date()
+      });
+
+      currentUser = user;
+
+      // Miditra ho azy
+      loadDashboard();
+
+    })
+    .catch(err => alert(err.message));
+}
