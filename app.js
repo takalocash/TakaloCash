@@ -7,14 +7,32 @@ firebase.auth().onAuthStateChanged(user => {
 let currentUser = null;
 
 // LOGIN
-function login() {
+function signup() {
+
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  firebase.auth().signInWithEmailAndPassword(email, password)
+  // 👉 APETRAKA ETO
+  const nom = document.getElementById("nom").value;
+  const telephone = document.getElementById("telephone").value;
+
+  firebase.auth().createUserWithEmailAndPassword(email, password)
     .then((userCredential) => {
-      currentUser = userCredential.user;
+
+      let user = userCredential.user;
+
+      db.collection("users").doc(user.uid).set({
+        email: email,
+        nom: nom,
+        telephone: telephone,
+        photo: "",
+        solde: 0,
+        createdAt: new Date()
+      });
+
+      currentUser = user;
       loadDashboard();
+
     })
     .catch(err => alert(err.message));
 }
