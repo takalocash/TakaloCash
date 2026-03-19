@@ -56,6 +56,7 @@ function loadDashboard() {
   });
 
   loadHistory();
+  document.getElementById("profilePic").src = data.photo || "https://via.placeholder.com/40";
 }
 
 // RECEVOIR
