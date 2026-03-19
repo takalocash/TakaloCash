@@ -143,3 +143,21 @@ function signup() {
     })
     .catch(err => alert(err.message));
 }
+function uploadPhoto() {
+  const file = document.getElementById("photo").files[0];
+  const uid = currentUser.uid;
+
+  const ref = storage.ref("profiles/" + uid);
+
+  ref.put(file).then(() => {
+    ref.getDownloadURL().then(url => {
+
+      db.collection("users").doc(uid).update({
+        photo: url
+      });
+
+      alert("Photo mise à jour !");
+      loadDashboard();
+    });
+  });
+}
