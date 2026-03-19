@@ -1,0 +1,60 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0b0e11;
+  color: white;
+}
+
+.container {
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: #1e2329;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 15px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 5px;
+  border: none;
+  font-weight: bold;
+}
+
+.send {
+  background: #f0b90b;
+}
+
+.receive {
+  background: #02c076;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.icons span {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.btns {
+  display: flex;
+  gap: 10px;
+}
