@@ -57,6 +57,8 @@ function loadDashboard() {
 
   loadHistory();
   document.getElementById("profilePic").src = data.photo || "https://via.placeholder.com/40";
+  document.getElementById("nom").innerText = data.nom;
+document.getElementById("telephone").innerText = data.telephone;
 }
 
 // RECEVOIR
