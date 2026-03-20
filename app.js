@@ -1,239 +1,138 @@
-// -----------------------------
-// app.js - Supabase version
-// -----------------------------
-
-// Setup Supabase
-const supabaseUrl = "https://lvcxpqpwgwqkrfbxpewt.supabase.co";   
-const supabaseKey = "sb_publishable_DhnOyzW9vyvWCEdbnhaZpw_4vIPHmS1";      
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+// --- CONFIGURATION ---
+const supabaseUrl = "VOTRE_PROJECT_URL"; 
+const supabaseKey = "VOTRE_ANON_KEY";
+const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
-// -----------------------------
-// Auth state listener
-// -----------------------------
-supabase.auth.onAuthStateChange((event, session) => {
-  if (session?.user) {
-    currentUser = session.user;
-    loadDashboard();
-  } else {
-    currentUser = null;
-    document.getElementById("loginPage").style.display = "block";
-    document.getElementById("dashboard").style.display = "none";
-  }
+// --- AUTH LISTENER ---
+_supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+        currentUser = session.user;
+        loadDashboard();
+    } else {
+        document.getElementById("loginPage").style.display = "block";
+        document.getElementById("dashboard").style.display = "none";
+    }
 });
 
-// -----------------------------
-// SIGNUP
-// -----------------------------
+// --- SIGNUP ---
 async function signup() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const nom = document.getElementById("nom").value;
-  const telephone = document.getElementById("telephone").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const nom = document.getElementById("nom").value;
+    const tel = document.getElementById("telephone").value;
 
-  const { data, error } = await supabase.auth.signUp({ email, password });
-  if (error) return alert(error.message);
+    const { data, error } = await _supabase.auth.signUp({ email, password });
+    if (error) return alert(error.message);
 
-  currentUser = data.user;
+    // Mamorona profil ao amin'ny table 'users'
+    await _supabase.from("users").insert([
+        { id: data.user.id, email: email, nom: nom, telephone: tel, solde: 0 }
+    ]);
 
-  // Ajouter user dans table "users"
-  await supabase.from("users").insert([
-    {
-      id: currentUser.id,
-      email,
-      nom,
-      telephone,
-      photo: "",
-      solde: 0
-    }
-  ]);
-
-  alert("Compte créé !");
-  loadDashboard();
+    alert("Kaonty voaforona! Jereo ny email-nao raha misy fanamarinana.");
 }
 
-// -----------------------------
-// LOGIN
-// -----------------------------
+// --- LOGIN ---
 async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return alert(error.message);
-
-  currentUser = data.user;
-  alert("Connecté !");
-  loadDashboard();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const { error } = await _supabase.auth.signInWithPassword({ email, password });
+    if (error) alert(error.message);
 }
 
-// -----------------------------
-// LOGOUT
-// -----------------------------
+// --- LOGOUT ---
 async function logout() {
-  await supabase.auth.signOut();
-  location.reload();
+    await _supabase.auth.signOut();
 }
 
-// -----------------------------
-// Upload photo profil
-// -----------------------------
-async function uploadPhoto() {
-  const file = document.getElementById("photo").files[0];
-  if (!file || !currentUser) return alert("Sélectionnez un fichier et connectez-vous");
-
-  // Upload dans Supabase Storage
-  const { data, error } = await supabase.storage
-    .from("profiles")
-    .upload(currentUser.id + "/" + file.name, file, { upsert: true });
-
-  if (error) return alert(error.message);
-
-  const { publicURL } = supabase.storage
-    .from("profiles")
-    .getPublicUrl(currentUser.id + "/" + file.name);
-
-  // Mise à jour table users
-  await supabase.from("users").update({ photo: publicURL }).eq("id", currentUser.id);
-
-  alert("Photo mise à jour !");
-  loadDashboard();
-}
-
-// -----------------------------
-// Load Dashboard
-// -----------------------------
+// --- DASHBOARD ---
 async function loadDashboard() {
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
 
-  // Récupérer user
-  const { data: userData, error } = await supabase.from("users").select("*").eq("id", currentUser.id).single();
-  if (error) return alert(error.message);
+    const { data: user, error } = await _supabase.from("users").select("*").eq("id", currentUser.id).single();
+    if (error) return;
 
-  document.getElementById("solde").innerText = userData.solde + " Ar";
-  document.getElementById("profilePic").src = userData.photo || "https://via.placeholder.com/40";
-  document.getElementById("profilNom").innerText = userData.nom;
-  document.getElementById("profilTelephone").innerText = userData.telephone;
+    document.getElementById("solde").innerText = new Intl.NumberFormat('mg-MG').format(user.solde) + " Ar";
+    document.getElementById("profilNom").innerText = user.nom;
+    document.getElementById("profilTelephone").innerText = user.telephone;
+    if (user.photo) document.getElementById("profilePic").src = user.photo;
 
-  loadTransactions();
-  loadNotifications();
+    loadTransactions();
+    loadNotifications();
 }
 
-// -----------------------------
-// ENVOYER
-// -----------------------------
+// --- UPLOAD PHOTO ---
+async function uploadPhoto() {
+    const file = document.getElementById("photo").files[0];
+    const filePath = `avatars/${currentUser.id}_${Date.now()}`;
+
+    const { error: uploadError } = await _supabase.storage.from("profiles").upload(filePath, file);
+    if (uploadError) return alert(uploadError.message);
+
+    const { data: urlData } = _supabase.storage.from("profiles").getPublicUrl(filePath);
+    const publicUrl = urlData.publicUrl;
+
+    await _supabase.from("users").update({ photo: publicUrl }).eq("id", currentUser.id);
+    loadDashboard();
+}
+
+// --- TRANSACTION (ENVOYER / RECEVOIR) ---
 async function envoyer() {
-  let montant = prompt("Montant:");
-  montant = parseFloat(montant);
-  const service = prompt("Service (crypto, wallet, starlink, xbet):").toLowerCase();
-
-  const { data: userData } = await supabase.from("users").select("*").eq("id", currentUser.id).single();
-
-  if (userData.solde < montant) return alert("Solde insuffisant");
-
-  const reference = "TRX-" + Math.random().toString(36).substring(2,10).toUpperCase();
-
-  // Mise à jour solde
-  await supabase.from("users").update({ solde: userData.solde - montant }).eq("id", currentUser.id);
-
-  // Ajouter transaction
-  await supabase.from("transactions").insert([
-    {
-      user_id: currentUser.id,
-      type: "envoyer",
-      service,
-      montant,
-      reference,
-      status: "confirmé",
-      created_at: new Date()
-    }
-  ]);
-
-  // Notification
-  await supabase.from("notifications").insert([
-    {
-      user_id: currentUser.id,
-      message: `Transfert réussi - Ref: ${reference}`,
-      lu: false,
-      created_at: new Date()
-    }
-  ]);
-
-  alert("Transfert réussi !");
-  loadDashboard();
+    executeTransaction("envoyer");
 }
 
-// -----------------------------
-// RECEVOIR
-// -----------------------------
 async function recevoir() {
-  let montant = prompt("Montant:");
-  const service = prompt("Service (crypto, wallet, starlink, xbet):").toLowerCase();
-
-  const { data: userData } = await supabase.from("users").select("*").eq("id", currentUser.id).single();
-
-  const reference = "TRX-" + Math.random().toString(36).substring(2,10).toUpperCase();
-
-  await supabase.from("users").update({ solde: userData.solde + montant }).eq("id", currentUser.id);
-
-  await supabase.from("transactions").insert([
-    {
-      user_id: currentUser.id,
-      type: "recevoir",
-      service,
-      montant,
-      reference,
-      status: "confirmé",
-      created_at: new Date()
-    }
-  ]);
-
-  await supabase.from("notifications").insert([
-    {
-      user_id: currentUser.id,
-      message: `Montant reçu - Ref: ${reference}`,
-      lu: false,
-      created_at: new Date()
-    }
-  ]);
-
-  alert("Montant reçu !");
-  loadDashboard();
+    executeTransaction("recevoir");
 }
 
-// -----------------------------
-// Historique transactions
-// -----------------------------
+async function executeTransaction(type) {
+    let montant = parseFloat(prompt("Firy ny vola?"));
+    if (isNaN(montant) || montant <= 0) return alert("Vola tsy mitombina");
+
+    const service = prompt("Inona ny service? (ex: 1xBet, Crypto...)");
+    const { data: user } = await _supabase.from("users").select("solde").eq("id", currentUser.id).single();
+
+    let vaovaoSolde = (type === "envoyer") ? user.solde - montant : user.solde + montant;
+    if (vaovaoSolde < 0) return alert("Tsy ampy ny solde-nao");
+
+    const ref = "TX-" + Math.random().toString(36).substring(7).toUpperCase();
+
+    // Update solde
+    await _supabase.from("users").update({ solde: vaovaoSolde }).eq("id", currentUser.id);
+
+    // Save transaction
+    await _supabase.from("transactions").insert([{
+        user_id: currentUser.id, type, service, montant, reference: ref
+    }]);
+
+    // Add notification
+    await _supabase.from("notifications").insert([{
+        user_id: currentUser.id, message: `Transaction ${type} (${montant} Ar) vita. Ref: ${ref}`
+    }]);
+
+    loadDashboard();
+}
+
+// --- LOAD DATA ---
 async function loadTransactions() {
-  const { data: transactions } = await supabase.from("transactions").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false });
-
-  const tbody = document.getElementById("transactionBody");
-  tbody.innerHTML = "";
-
-  transactions.forEach(tx => {
-    tbody.innerHTML += `<tr>
-      <td>${new Date(tx.created_at).toLocaleString()}</td>
-      <td>${tx.service}</td>
-      <td>${tx.type}</td>
-      <td>${tx.montant}</td>
-      <td>${tx.status}</td>
-      <td>${tx.reference}</td>
-    </tr>`;
-  });
+    const { data } = await _supabase.from("transactions").select("*").eq("user_id", currentUser.id).order("id", { ascending: false });
+    const tbody = document.getElementById("transactionBody");
+    tbody.innerHTML = data.map(t => `
+        <tr>
+            <td>${new Date(t.created_at).toLocaleDateString()}</td>
+            <td>${t.service}</td>
+            <td>${t.type === 'envoyer' ? '🔴' : '🟢'}</td>
+            <td>${t.montant}</td>
+            <td>${t.reference}</td>
+        </tr>
+    `).join('');
 }
 
-// -----------------------------
-// Notifications
-// -----------------------------
 async function loadNotifications() {
-  const { data: notifs } = await supabase.from("notifications").select("*").eq("user_id", currentUser.id).order("created_at", { ascending: false });
-
-  const ul = document.getElementById("notificationList");
-  ul.innerHTML = "";
-
-  notifs.forEach(n => {
-    ul.innerHTML += `<li>${n.message}</li>`;
-  });
+    const { data } = await _supabase.from("notifications").select("*").eq("user_id", currentUser.id).order("id", { ascending: false });
+    const ul = document.getElementById("notificationList");
+    ul.innerHTML = data.map(n => `<li>${n.message}</li>`).join('');
 }
