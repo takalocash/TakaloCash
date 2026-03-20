@@ -1,211 +1,86 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="mg">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TakaloCash</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<style>
-/* --- Style général --- */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f2f5f7;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  width: 100%;
-  max-width: 400px;
-  margin: 50px auto;
-}
-
-.card {
-  background-color: white;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-input, button, select {
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-button {
-  cursor: pointer;
-  font-weight: bold;
-}
-
-button.send { background-color: #ffc107; color: #000; }
-button.receive { background-color: #28a745; color: #fff; }
-
-/* --- Header dashboard --- */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #0d6efd;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-}
-
-.header h2 { margin: 0; }
-.header .icons span {
-  margin-left: 15px;
-  cursor: pointer;
-}
-
-/* --- Profile pic --- */
-#profilePic {
-  display: block;
-  margin: 10px auto;
-  border-radius: 50%;
-}
-
-/* --- Solde --- */
-#solde {
-  text-align: center;
-  font-size: 2em;
-  margin: 10px 0;
-}
-
-/* --- Boutons services --- */
-.services {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin: 10px 0;
-}
-
-.services button {
-  padding: 15px;
-  font-weight: bold;
-  border: none;
-  color: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.services button.crypto { background-color: #6f42c1; }
-.services button.wallet { background-color: #20c997; }
-.services button.starlink { background-color: #fd7e14; }
-.services button.xbet { background-color: #dc3545; }
-
-/* --- Tableau historique --- */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: center;
-}
-
-th { background-color: #0d6efd; color: white; }
-
-/* --- Notification --- */
-#notificationList {
-  list-style: none;
-  padding: 0;
-}
-
-#notificationList li {
-  background-color: #f8f9fa;
-  padding: 5px 10px;
-  margin-bottom: 5px;
-  border-radius: 5px;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TakaloCash</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-
 <body>
 
-<!-- LOGIN -->
 <div class="container" id="loginPage">
-  <div class="card">
-    <h2>TakaloCash</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Mot de passe">
-    <input type="text" id="nom" placeholder="Nom">
-    <input type="text" id="telephone" placeholder="Téléphone">
-    <input type="file" id="photo">
-    <button onclick="signup()">Créer un compte</button>
-    <button onclick="login()">Connexion</button>
-    <button onclick="uploadPhoto()">Upload Photo</button>
-  </div>
-</div>
-
-<!-- DASHBOARD -->
-<div class="container" id="dashboard" style="display:none;">
-
-  <div class="header">
-    <h2>TakaloCash</h2>
-    <div class="icons">
-      <span>🔔</span>
-      <span onclick="logout()">☰</span>
+    <div class="card">
+        <h2 style="text-align: center; color: #0d6efd;">TakaloCash</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Teny miafina">
+        <hr>
+        <p style="font-size: 0.8em; color: #666;">Raha mbola tsy manana kaonty:</p>
+        <input type="text" id="nom" placeholder="Anarana feno">
+        <input type="text" id="telephone" placeholder="Laharana finday">
+        <button onclick="signup()" style="background-color: #6c757d; color: white;">Hamorona kaonty</button>
+        <hr>
+        <button onclick="login()" style="background-color: #0d6efd; color: white;">Hiditra (Connexion)</button>
     </div>
-  </div>
-
-  <img id="profilePic" src="https://via.placeholder.com/40" width="60">
-
-  <div class="card">
-    <h3>Solde disponible</h3>
-    <h1 id="solde">0 Ar</h1>
-  </div>
-
-  <div class="btns">
-    <button class="send" onclick="envoyer()">Envoyer</button>
-    <button class="receive" onclick="recevoir()">Recevoir</button>
-  </div>
-
-  <div class="services">
-    <button class="crypto" onclick="alert('Crypto')">Crypto</button>
-    <button class="wallet" onclick="alert('Portefeuille Virtuel')">Wallet</button>
-    <button class="starlink" onclick="alert('Starlink')">Starlink</button>
-    <button class="xbet" onclick="alert('1xBet')">1xBet</button>
-  </div>
-
-  <div class="card">
-    <h3>Historique Transactions</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Service</th>
-          <th>Type</th>
-          <th>Montant</th>
-          <th>Status</th>
-          <th>Réf</th>
-        </tr>
-      </thead>
-      <tbody id="transactionBody"></tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <h3>Notifications</h3>
-    <ul id="notificationList"></ul>
-  </div>
-
-  <div class="card">
-    <h3>Profil</h3>
-    <p id="profilNom"></p>
-    <p id="profilTelephone"></p>
-    <button onclick="logout()">Déconnexion</button>
-  </div>
-
 </div>
 
-<script src="supabase.js"></script>
+<div class="container" id="dashboard" style="display:none;">
+    <div class="header">
+        <h2>TakaloCash</h2>
+        <div class="icons">
+            <span title="Notifications">🔔</span>
+            <span onclick="logout()" title="Hivoaka">✕</span>
+        </div>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <img id="profilePic" src="https://via.placeholder.com/60" alt="Profil">
+        <input type="file" id="photo" style="display:none;" onchange="uploadPhoto()">
+        <button onclick="document.getElementById('photo').click()" style="width: auto; padding: 5px 10px; font-size: 0.7em;">Hanova sary</button>
+        <h3 id="profilNom">...</h3>
+        <p id="profilTelephone" style="color: #666;"></p>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-bottom: 5px;">Solde disponible</h3>
+        <h1 id="solde">0 Ar</h1>
+        <div class="btns" style="display: flex; gap: 10px;">
+            <button class="send" onclick="envoyer()">Handefa</button>
+            <button class="receive" onclick="recevoir()">Handray</button>
+        </div>
+    </div>
+
+    <div class="services">
+        <button class="crypto" onclick="alert('Crypto')">Crypto</button>
+        <button class="wallet" onclick="alert('Wallet')">Wallet</button>
+        <button class="starlink" onclick="alert('Starlink')">Starlink</button>
+        <button class="xbet" onclick="alert('1xBet')">1xBet</button>
+    </div>
+
+    <div class="card">
+        <h3>Historique</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Daty</th>
+                        <th>Service</th>
+                        <th>Type</th>
+                        <th>Montant</th>
+                        <th>Réf</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Notifications</h3>
+        <ul id="notificationList"></ul>
+    </div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
