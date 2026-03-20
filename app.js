@@ -1,6 +1,6 @@
 // --- CONFIGURATION ---
-const supabaseUrl = "VOTRE_PROJECT_URL"; 
-const supabaseKey = "VOTRE_ANON_KEY";
+const supabaseUrl = "https://lvcxpqwgwqkrfbxpewt.supabase.co"; 
+const supabaseKey = "sb_publishable_DhnOyzW9vyvWCEdbnhaZpw_4vIPHmS1";
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
