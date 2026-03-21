@@ -1,6 +1,6 @@
 // --- CONFIGURATION ---
 const supabaseUrl = "https://lvcxpqwgwqkrfbxpewt.supabase.co"; 
-const supabaseKey = "sb_publishable_DhnOyzW9vyvWCEdbnhaZpw_4vIPHmS1";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2Y3hwcXB3Z3dxa3JmYnhwZXd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MzQzMzYsImV4cCI6MjA4OTUxMDMzNn0.XfCkO7SfwqNW7Vq5BKASj-yELcQGTQESlMurI-S6VEc";
 const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
